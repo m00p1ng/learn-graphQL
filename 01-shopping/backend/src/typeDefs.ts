@@ -14,9 +14,11 @@ export const typeDefinitions = /* GraphQL */ `
 
   type Mutation {
     createItem(title: String, description: String, price: Int, image: String, largeImage: String): Item!
+    updateItem(id: Int!, title: String, description: String, price: Int): Item!
   }
 
   type Query {
     items: [Item]!
+    item(id: Int!): Item
   }
 `
