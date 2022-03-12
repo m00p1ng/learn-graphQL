@@ -1,24 +1,9 @@
 import Header from './Header'
 import Meta from './Meta'
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
-
-const theme = {
-  red: '#FF0000',
-  black: '#393939',
-  grey: '#3A3A3A',
-  lightgrey: '#E1E1E1',
-  offwhite: '#EDEDED',
-  maxWidth: '1000px',
-  bs: '0 12px 24px 0 rgba(0, 0, 0, 0.09)'
-}
-
-const StyledPage = styled.div`
-  background: white;
-  color: ${props => props.theme.black};
-`
+import styled, { createGlobalStyle } from 'styled-components'
 
 const Inner = styled.div`
-  max-width: ${props => props.theme.maxWidth};
+  max-width: var(--maxWidth);
   margin: 0 auto;
   padding: 2rem;
 `
@@ -30,8 +15,16 @@ const GlobalStyle = createGlobalStyle`
     font-weight: normal;
     font-style: normal;
   }
-
   html {
+    --red: #ff0000;
+    --black: #393939;
+    --grey: #3A3A3A;
+    --gray: var(--grey);
+    --lightGrey: #e1e1e1;
+    --lightGray: var(--lightGrey);
+    --offWhite: #ededed;
+    --maxWidth: 1000px;
+    --bs: 0 12px 24px 0 rgba(0,0,0,0.09);
     box-sizing: border-box;
     font-size: 10px;
   }
@@ -43,24 +36,28 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     font-size: 1.5rem;
     line-height: 2;
-    font-family: 'radnika_next';
+    font-family: 'radnika_next', --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
   a {
     text-decoration: none;
-    color: ${props => props.theme.black}
+    color: var(---black)
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  button {
+    font-family: 'radnika_next', --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
   }
 `
 
 function Page({ children }) {
   return (
-    <ThemeProvider theme={theme}>
+    <div>
       <GlobalStyle />
-      <StyledPage>
-        <Meta />
-        <Header />
-        <Inner>{children}</Inner>
-      </StyledPage>
-    </ThemeProvider>
+      <Meta />
+      <Header />
+      <Inner>{children}</Inner>
+    </div>
   )
 }
 
