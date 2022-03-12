@@ -1,5 +1,6 @@
 import { useQuery, gql } from '@apollo/client'
 import styled from 'styled-components'
+import Pagination from './Pagination'
 
 import Item from './Item'
 
@@ -40,6 +41,7 @@ function Items() {
 
   return (
     <Center>
+      <Pagination />
       <ItemsList>
         {data.items.map((item) => (
           <Item key={item.id} item={item} />

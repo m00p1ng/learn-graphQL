@@ -33,6 +33,14 @@ const Mutation = {
       console.log(err)
       throw err
     }
+  },
+  async deleteItem(parent, args) {
+    try {
+      return db.item.delete({ where: { id: args.id }})
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
   }
 }
 

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import ItemStyles from './styles/ItemStyles'
 import Title from './styles/Title'
 import PriceTag from './styles/PriceTag'
+import DeleteItem from './DeleteItem'
 import formatMoney from '../lib/formatMoney'
 
 function Item({ item }) {
@@ -24,7 +25,7 @@ function Item({ item }) {
           <a>Edit</a>
         </Link>
         <button>Add To Cart</button>
-        <button>Delete</button>
+        <DeleteItem id={parseInt(item.id)}>Delete Item</DeleteItem>
       </div>
     </ItemStyles>
   )

@@ -1,24 +1,33 @@
-import { useMutation, gql } from '@apollo/client'
+import { useQuery, useMutation, gql } from '@apollo/client'
 
 import DisplayError from './ErrorMessage';
 import useForm from '../lib/useForm'
 import Form from './styles/Form'
 import formatMoney from '../lib/formatMoney'
 
-const CREATE_ITEM_MUTATION = gql`
-  mutation CREATE_ITEM_MUTATION(
+const SINGLE_ITEM_QUERY = gql`
+  query SINGLE_ITEM_QUERY($id: Int!) {
+    item(id: $id) {
+      id
+      title
+      description
+      price
+    }
+  }
+`
+
+const UPDATE_ITEM_MUTATION = gql`
+  mutation UPDATE_ITEM_MUTATION(
+    $id: Int!
     $title: String!
     $description: String!
     $price: Int!
-    $image: String
-    $largeImage: String
   ) {
-    createItem(
+    updateItem(
+      id: $id
       title: $title
       description: $description
       price: $price
-      image: $image
-      largeImage: $largeImage
     ) {
       id
       title
@@ -28,14 +37,16 @@ const CREATE_ITEM_MUTATION = gql`
   }
 `;
 
-function CreateItem() {
-  const { inputs, handleChange, clearForm, resetForm } = useForm({
-    title: 'Nice Shoes',
-    price: 34234,
-    description: 'These are the best shoes!',
-  })
-  const [createItem, { loading, error, data }] = useMutation(
-    CREATE_ITEM_MUTATION,
+function UpdateItem({ id }) {
+  const { data, error, loading } = useQuery(SINGLE_ITEM_QUERY, {
+    variables: { id },
+  });
+  const { inputs, handleChange, clearForm, resetForm } = useForm(data?.item)
+  const [
+    updateItem,
+    { loading: updateLoading, error: updateError, data: updateData }
+  ] = useMutation(
+    UPDATE_ITEM_MUTATION,
     {
       variables: inputs,
     }
@@ -46,23 +57,12 @@ function CreateItem() {
       onSubmit={async (e) => {
         e.preventDefault()
         console.log(inputs);
-        await createItem();
+        await updateItem();
         clearForm();
       }}
     >
       <DisplayError error={error} />
       <fieldset disabled={loading} aria-busy={loading}>
-        <label htmlFor="file">
-          Image
-          <input
-            id="file"
-            type="file"
-            name="file"
-            placeholder="Upload an image"
-          // onChange={handleChange}
-          // required
-          />
-        </label>
         <label htmlFor="title">
           Title
           <input
@@ -107,4 +107,4 @@ function CreateItem() {
   )
 }
 
-export default CreateItem
+export default UpdateItem
