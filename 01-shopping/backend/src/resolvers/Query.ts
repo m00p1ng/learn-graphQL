@@ -1,8 +1,11 @@
 import db from '../db'
 
 const Query = {
-  async items() {
-    const items = await db.item.findMany()
+  async items(parent, args) {
+    const items = await db.item.findMany({
+      take: args.first,
+      skip: args.skip,
+    })
     return items
   },
   async item(parent, args) {

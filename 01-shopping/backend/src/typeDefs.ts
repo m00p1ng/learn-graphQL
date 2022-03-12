@@ -23,7 +23,7 @@ export const typeDefinitions = /* GraphQL */ `
   }
 
   type Query {
-    items: [Item]!
+    items(first: Int, skip: Int): [Item]!
     item(id: Int!): Item
     _allItemsMeta: Meta
   }

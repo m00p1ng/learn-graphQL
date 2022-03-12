@@ -1,12 +1,13 @@
 import { useQuery, gql } from '@apollo/client'
 import styled from 'styled-components'
-import Pagination from './Pagination'
 
+import Pagination from './Pagination'
 import Item from './Item'
+import config from '../config'
 
 const ALL_ITEMS_QUERY = gql`
-  query ALL_ITEMS_QUERY {
-    items {
+  query ALL_ITEMS_QUERY($skip: Int = 0, $first: Int) {
+    items(first: $first, skip: $skip) {
       id
       title
       price
@@ -28,8 +29,13 @@ const ItemsList = styled.div`
   max-width: var(--maxWidth);
 `
 
-function Items() {
-  const { data, error, loading } = useQuery(ALL_ITEMS_QUERY)
+function Items({ page }) {
+  const { data, error, loading } = useQuery(ALL_ITEMS_QUERY, {
+    variables: {
+      skip: page * config.perPage - config.perPage,
+      first: config.perPage,
+    }
+  })
 
   if (loading) {
     return (<p>Loading....</p>)
@@ -41,7 +47,7 @@ function Items() {
 
   return (
     <Center>
-      <Pagination />
+      <Pagination page={page} />
       <ItemsList>
         {data.items.map((item) => (
           <Item key={item.id} item={item} />
