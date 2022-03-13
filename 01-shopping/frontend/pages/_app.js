@@ -1,9 +1,11 @@
 import { ApolloProvider } from "@apollo/client";
 
 import Page from '../components/Page'
-import client from "../lib/apolloClient";
+import { useApollo } from "../lib/apolloClient";
 
 function MyApp({ Component, pageProps }) {
+  const client = useApollo(pageProps)
+
   return (
     <ApolloProvider client={client}>
       <Page>
@@ -13,7 +15,8 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-MyApp.getInitialProps = async function ({ Component, ctx }) {
+MyApp.getServerSideProps = async function ({ Component, ctx }) {
+  console.log({ ctx })
   let pageProps = {};
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx);
