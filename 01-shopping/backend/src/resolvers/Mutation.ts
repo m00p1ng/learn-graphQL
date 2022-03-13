@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-import db from '../db'
+import config from '../config'
 
 const Mutation = {
-  async createItem(parent, args) {
+  async createItem(parent, args, ctx) {
     try {
-      const item = await db.item.create({
+      const item = await ctx.prisma.item.create({
         data: {
           title: args.title,
           description: args.description,
@@ -21,9 +21,9 @@ const Mutation = {
       throw err
     }
   },
-  async updateItem(parent, args) {
+  async updateItem(parent, args, ctx) {
     try {
-      const item = await db.item.update({
+      const item = await ctx.prisma.item.update({
         where: { id: args.id},
         data: {
           title: args.title,
@@ -37,9 +37,9 @@ const Mutation = {
       throw err
     }
   },
-  async deleteItem(parent, args) {
+  async deleteItem(parent, args, ctx) {
     try {
-      return db.item.delete({ where: { id: args.id }})
+      return ctx.prisma.item.delete({ where: { id: args.id }})
     } catch (err) {
       console.log(err)
       throw err
@@ -48,7 +48,7 @@ const Mutation = {
   async signup(parent, args, ctx) {
     const password = await bcrypt.hash(args.password, 10)
 
-    const user = await db.user.create({
+    const user = await ctx.prisma.user.create({
       data: {
         email: args.email.toLowerCase(),
         password,
@@ -57,7 +57,28 @@ const Mutation = {
       }
     })
 
-    const token = jwt.sign({userId: user.id}, 'test-test-test')
+    const token = jwt.sign({userId: user.id}, config.jwtSecret)
+    ctx.res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    })
+
+    return user
+  },
+  async signin(parent, args, ctx) {
+    const user = await ctx.prisma.user.findUnique({ where: { email: args.email }})
+    if (!user) {
+      throw new Error(`No such user found for email ${args.email}`)
+    }
+
+    const valid = await bcrypt.compare(args.password, user.password)
+
+    if (!valid) {
+      throw new Error('Invalid Password!')
+    }
+
+    const token = jwt.sign({ userId: user.id }, config.jwtSecret)
+
     ctx.res.cookie('token', token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365,

@@ -28,7 +28,7 @@ export const typeDefinitions = /* GraphQL */ `
     password: String!
     resetToken: String!
     resetTokenExpiry: String!
-    permission: [Permission!]!
+    permissions: [Permission!]!
   }
 
   type Meta {
@@ -40,11 +40,13 @@ export const typeDefinitions = /* GraphQL */ `
     updateItem(id: Int!, title: String, description: String, price: Int): Item!
     deleteItem(id: Int!): Item
     signup(email: String!, password: String!, name: String!): User!
+    signin(email: String!, password: String!): User!
   }
 
   type Query {
     items(first: Int, skip: Int): [Item]!
     item(id: Int!): Item
     _allItemsMeta: Meta
+    me: User
   }
 `

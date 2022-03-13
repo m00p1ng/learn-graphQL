@@ -1,21 +1,27 @@
-import db from '../db'
 
 const Query = {
-  async items(parent, args) {
-    const items = await db.item.findMany({
+  async items(parent, args, ctx) {
+    const items = await ctx.prisma.item.findMany({
       take: args.first,
       skip: args.skip,
     })
     return items
   },
-  async item(parent, args) {
-    const item = await db.item.findUnique({ where: { id: args.id }})
+  async item(parent, args, ctx) {
+    const item = await ctx.prisma.item.findUnique({ where: { id: args.id }})
     return item
   },
-  async _allItemsMeta() {
-    const count = await db.item.count()
+  async _allItemsMeta(parent, args, ctx) {
+    const count = await ctx.prisma.item.count()
     return { count }
-  }
+  },
+  async me(parent, args, ctx) {
+    if (!ctx.req.userId) {
+      return null
+    }
+
+    return ctx.prisma.user.findUnique({ where: { id: ctx.req.userId }})
+  },
 }
 
 export default Query
