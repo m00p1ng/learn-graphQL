@@ -25,7 +25,7 @@ function Item({ item }) {
           <a>Edit</a>
         </Link>
         <button>Add To Cart</button>
-        <DeleteItem id={parseInt(item.id)}>Delete Item</DeleteItem>
+        <DeleteItem id={item.id}>Delete Item</DeleteItem>
       </div>
     </ItemStyles>
   )
