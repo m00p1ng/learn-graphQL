@@ -56,7 +56,6 @@ function UpdateItem({ id }) {
     <Form
       onSubmit={async (e) => {
         e.preventDefault()
-        console.log(inputs);
         await updateItem();
         clearForm();
       }}

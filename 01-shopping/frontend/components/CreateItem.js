@@ -45,7 +45,6 @@ function CreateItem() {
     <Form
       onSubmit={async (e) => {
         e.preventDefault()
-        console.log(inputs);
         await createItem();
         clearForm();
       }}
