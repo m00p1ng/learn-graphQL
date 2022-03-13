@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { randomBytes } from 'crypto'
 
 import config from '../config'
+import { transport, makeANiceEmail } from '../mail'
 
 const Mutation = {
   async createItem(parent, args, ctx) {
@@ -108,6 +109,15 @@ const Mutation = {
         resetToken,
         resetTokenExpiry
       }
+    })
+
+    const mailRes = await transport.sendMail({
+      from: 'mongkonchai4412@gmail.com',
+      to: args.email,
+      subject: 'Your Password Reset',
+      html: makeANiceEmail(`Your password reset Token is here!
+      \n\n
+      <a href="${config.frontendUrl}/reset?resetToken=${resetToken}">Click Here to Reset</a>`)
     })
 
     return { message: 'Success' }

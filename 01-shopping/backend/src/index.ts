@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { createServer } from '@graphql-yoga/node'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import cookieParser from 'cookie-parser'
