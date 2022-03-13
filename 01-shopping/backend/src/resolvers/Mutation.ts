@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { randomBytes } from 'crypto'
 
 import config from '../config'
 
@@ -85,6 +86,69 @@ const Mutation = {
     })
 
     return user
+  },
+  async signout(parent, args, ctx) {
+    ctx.res.clearCookie('token')
+
+    return { message: 'GoodBye!' }
+  },
+  async requestReset(parent, args, ctx) {
+    const user = ctx.prisma.user.findUnique({ where: { email: args.email }})
+
+    if (!user) {
+      throw new Error(`No such user found for email ${args.email}`)
+    }
+
+    const resetToken = randomBytes(20).toString('hex')
+    const resetTokenExpiry = Date.now() + 60*60*1000
+
+    const res = await ctx.prisma.user.update({
+      where: { email: args.email },
+      data: {
+        resetToken,
+        resetTokenExpiry
+      }
+    })
+
+    return { message: 'Success' }
+  },
+  async resetPassword(parent, args, ctx) {
+    if(args.password !== args.confirmPassword) {
+      throw new Error('You password is not match')
+    }
+
+    const [user] = await ctx.prisma.user.findMany({
+      where: {
+        resetToken: args.resetToken,
+        resetTokenExpiry: {
+          gt: Date.now() - 60*60*1000
+        }
+      }
+    })
+
+    if (!user) {
+      throw new Error('This token is either invalid or expired!')
+    }
+
+    const password = await bcrypt.hash(args.password, 10)
+
+    const updatedUser = await ctx.prisma.user.update({
+      where: { email: user.email },
+      data: {
+        password,
+        resetToken: null,
+        resetTokenExpiry: null
+      }
+    })
+
+    const token = jwt.sign({userId: updatedUser.id}, config.jwtSecret)
+
+    ctx.res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    })
+
+    return updatedUser
   }
 }
 

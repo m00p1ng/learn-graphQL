@@ -25,14 +25,15 @@ export const typeDefinitions = /* GraphQL */ `
     id: Int!
     name: String!
     email: String!
-    password: String!
-    resetToken: String!
-    resetTokenExpiry: String!
     permissions: [Permission!]!
   }
 
   type Meta {
     count: Int!
+  }
+
+  type SuccessMessage {
+    message: String
   }
 
   type Mutation {
@@ -41,6 +42,9 @@ export const typeDefinitions = /* GraphQL */ `
     deleteItem(id: Int!): Item
     signup(email: String!, password: String!, name: String!): User!
     signin(email: String!, password: String!): User!
+    signout: SuccessMessage
+    requestReset(email: String!): SuccessMessage
+    resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
   }
 
   type Query {

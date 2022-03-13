@@ -15,8 +15,7 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-MyApp.getServerSideProps = async function ({ Component, ctx }) {
-  console.log({ ctx })
+MyApp.getInitialProps = async function ({ Component, ctx }) {
   let pageProps = {};
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx);
