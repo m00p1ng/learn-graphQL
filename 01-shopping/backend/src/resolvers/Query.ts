@@ -1,3 +1,4 @@
+import { hasPermission } from '../util'
 
 const Query = {
   async items(parent, args, ctx) {
@@ -22,6 +23,22 @@ const Query = {
 
     return ctx.prisma.user.findUnique({ where: { id: ctx.req.userId }})
   },
+  async users(parent, args, ctx) {
+    if (!ctx.req.userId) {
+      throw new Error('You must be logged in')
+    }
+
+    try {
+      const user = await ctx.prisma.user.findUnique({ where: { id: ctx.req.userId }})
+
+      hasPermission(user, ['ADMIN', 'PERMISSIONUPDATE'])
+
+      return ctx.prisma.user.findMany()
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
+  }
 }
 
 export default Query

@@ -45,6 +45,7 @@ export const typeDefinitions = /* GraphQL */ `
     signout: SuccessMessage
     requestReset(email: String!): SuccessMessage
     resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+    updatePermissions(permissions: [Permission], userId: Int!): User
   }
 
   type Query {
@@ -52,5 +53,6 @@ export const typeDefinitions = /* GraphQL */ `
     item(id: Int!): Item
     _allItemsMeta: Meta
     me: User
+    users: [User]!
   }
 `

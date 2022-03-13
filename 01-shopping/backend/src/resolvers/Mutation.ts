@@ -4,9 +4,14 @@ import { randomBytes } from 'crypto'
 
 import config from '../config'
 import { transport, makeANiceEmail } from '../mail'
+import { hasPermission } from '../util'
 
 const Mutation = {
   async createItem(parent, args, ctx) {
+    if (!ctx.req.userId) {
+      throw new Error('You must be logged in to do that')
+    }
+
     try {
       const item = await ctx.prisma.item.create({
         data: {
@@ -15,6 +20,7 @@ const Mutation = {
           image: args.image,
           largeImage: args.largeImage,
           price: args.price,
+          userId: ctx.req.userId,
         }
       })
       return item
@@ -159,6 +165,27 @@ const Mutation = {
     })
 
     return updatedUser
+  },
+  async updatePermissions(parent, args, ctx) {
+    if (!ctx.req.userId) {
+      throw new Error('You must be logged in')
+    }
+
+    try {
+      const currentUser = await ctx.prisma.user.findUnique({ where: { id: ctx.req.userId }})
+
+      hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE'])
+
+      return ctx.prisma.user.update({
+        where: { id: args.userId },
+        data: {
+          permissions: args.permissions
+        },
+      })
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
   }
 }
 
